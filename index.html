@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>한자 마스터 | 57자 시험 대비</title>
+<style>
+:root{--bg:#f4f6fb;--panel:#fff;--ink:#182033;--muted:#697386;--accent:#5b62e8;--line:#e6e9f2;--good:#168653;--bad:#d34b55}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Noto Sans KR",sans-serif}
+header{background:linear-gradient(120deg,#242b55,#555ee8);color:white;padding:28px 20px 34px}header,.wrap{max-width:980px;margin:auto}header .inner{max-width:940px;margin:auto}
+.eyebrow{opacity:.8;font-size:12px;letter-spacing:.12em;font-weight:700}h1{margin:8px 0;font-size:clamp(27px,5vw,40px)}header p{margin:0;color:#e0e3ff}
+.wrap{padding:22px 16px 50px}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:-18px}
+.stat,.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;box-shadow:0 8px 24px #2222}
+.stat{padding:15px}.stat small{color:var(--muted)}.stat strong{display:block;font-size:24px;margin-top:4px}
+.tabs{display:flex;gap:8px;overflow:auto;padding:22px 0 14px}.tab,button{border:0;border-radius:12px;padding:11px 15px;font-weight:700;cursor:pointer;font-size:14px}
+.tab{background:#e9ebf5;color:#4a5266;white-space:nowrap}.tab.active{background:var(--accent);color:white}
+.panel{padding:clamp(18px,4vw,30px);min-height:320px}.muted{color:var(--muted)}.center{text-align:center}
+.bigchar{font-size:clamp(68px,15vw,110px);font-weight:800;line-height:1.4;margin:12px 0}
+.prompt{font-size:clamp(26px,6vw,40px);font-weight:800;margin:18px 0}
+.actions{display:flex;gap:9px;flex-wrap:wrap;justify-content:center;margin-top:20px}
+.primary{background:var(--accent);color:white}.secondary{background:#eef0f8;color:#30394e}.good{background:#e4f6ed;color:var(--good)}.bad{background:#fff0f0;color:var(--bad)}
+.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:20px}
+.option{background:#f7f8fc;border:1px solid var(--line);color:var(--ink);min-height:58px;text-align:left}.option:hover{border-color:var(--accent)}
+.option:disabled{cursor:default;opacity:1}.option.correct{border:2px solid var(--good);background:#eaf8f0}.option.wrong{border:2px solid var(--bad);background:#fff0f0}
+.feedback{margin-top:16px;padding:13px;border-radius:12px;background:#f1f3fa}
+.progress{height:9px;background:#e8eaf2;border-radius:9px;overflow:hidden;margin:12px 0}.progress span{display:block;height:100%;background:var(--accent);width:0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.tiny{font-size:13px}.hide{display:none}
+input{padding:13px;border:1px solid var(--line);border-radius:11px;font-size:18px;width:min(100%,420px);text-align:center}
+.list{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px;margin-top:16px}.tile{background:#f8f9fc;border:1px solid var(--line);padding:12px;border-radius:12px;text-align:center}.tile b{font-size:26px;display:block}.tile small{color:var(--muted)}
+@media(max-width:520px){.stats{gap:7px}.stat{padding:11px}.stat strong{font-size:20px}.options{grid-template-columns:1fr}.tab{padding:10px 12px}}
+</style></head><body>
+<header><div class="inner"><div class="eyebrow">KOREAN CLASSICS · STUDY MODE</div><h1>漢字 MASTER</h1><p>57자 한문 시험 대비 · 외우고, 풀고, 실력을 확인하자.</p></div></header>
+<div class="wrap">
+<div class="stats"><div class="stat"><small>전체 한자</small><strong>57자</strong></div><div class="stat"><small>이번 학습 정답</small><strong id="known">0개</strong></div><div class="stat"><small>오답 노트</small><strong id="wrongCount">0개</strong></div></div>
+<nav class="tabs">
+<button class="tab active" data-mode="cards">암기 카드</button><button class="tab" data-mode="h2m">한자 → 음·뜻</button><button class="tab" data-mode="m2h">음·뜻 → 한자</button><button class="tab" data-mode="wrong">오답 다시 풀기</button><button class="tab" data-mode="exam">57문제 실전 시험</button><button class="tab" data-mode="list">한자 목록</button>
+</nav>
+<section class="panel" id="app"></section>
+</div>
+<script>
+const DATA = [{"h": "吾", "m": "나 오"}, {"h": "井", "m": "우물 정"}, {"h": "鼻", "m": "코 비"}, {"h": "觀", "m": "보다 관"}, {"h": "尺", "m": "자 척"}, {"h": "歲", "m": "해 세"}, {"h": "坐", "m": "앉다 좌"}, {"h": "習", "m": "익히다 습"}, {"h": "至", "m": "이르다 지"}, {"h": "承", "m": "잇다 승"}, {"h": "落", "m": "떨어지다 락"}, {"h": "于", "m": "어조사 우"}, {"h": "烏", "m": "까마귀 오"}, {"h": "經", "m": "글 경"}, {"h": "虎", "m": "호랑이 호"}, {"h": "飛", "m": "날다 비"}, {"h": "識", "m": "알다 식"}, {"h": "傳", "m": "전하다 전"}, {"h": "梨", "m": "배나무 리"}, {"h": "丁", "m": "고무래 정"}, {"h": "愚", "m": "어리석다 우"}, {"h": "猶", "m": "같다 유"}, {"h": "神", "m": "귀신 신"}, {"h": "公", "m": "공평하다 공"}, {"h": "及", "m": "미치다 급"}, {"h": "到", "m": "이르다 도"}, {"h": "移", "m": "옮기다 이"}, {"h": "如", "m": "같다 여"}, {"h": "何", "m": "어찌 하"}, {"h": "過", "m": "지나다 과"}, {"h": "精", "m": "자세하다 정"}, {"h": "我", "m": "나 아"}, {"h": "受", "m": "받다 수"}, {"h": "初", "m": "처음 초"}, {"h": "益", "m": "더하다 익"}, {"h": "命", "m": "목숨 명"}, {"h": "志", "m": "뜻 지"}, {"h": "善", "m": "착하다, 좋다 선"}, {"h": "於", "m": "어조사 어"}, {"h": "貫", "m": "꿰다 관"}, {"h": "作", "m": "짓다 작"}, {"h": "多", "m": "많다 다"}, {"h": "郞", "m": "사내 랑"}, {"h": "遲", "m": "더디다 지"}, {"h": "應", "m": "응하다 응"}, {"h": "現", "m": "나타나다 현"}, {"h": "君", "m": "임금, 그대 군"}, {"h": "韻", "m": "음운 운"}, {"h": "處", "m": "곳 처"}, {"h": "律", "m": "법률 률"}, {"h": "畵", "m": "그림 화"}, {"h": "果", "m": "열매 과"}, {"h": "美", "m": "아름답다 미"}, {"h": "極", "m": "다하다 극"}, {"h": "的", "m": "과녁 적"}, {"h": "更", "m": "고치다 경 / 다시 갱"}, {"h": "效", "m": "본받다 효"}];
+let mode='cards', cardIndex=0, cardOrder=[...DATA.keys()], revealed=false;
+let quiz=[], qi=0, score=0, wrong=[], answered=false, examDone=false;
+const $=id=>document.getElementById(id);
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){let j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+function updateStats(){$('known').textContent=score+'개';$('wrongCount').textContent=wrong.length+'개'}
+function setMode(m){mode=m;document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===m));if(m==='cards'){cardOrder=shuffle([...DATA.keys()]);cardIndex=0;revealed=false;render()}else if(m==='list'){renderList()}else if(m==='wrong'){startQuiz(wrong,'h2m')}else if(m==='exam'){startQuiz([...DATA.keys()],'h2m',true)}else if(m==='h2m'){startQuiz([...DATA.keys()],'h2m',false)}else{startQuiz([...DATA.keys()],'m2h',false)}}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>setMode(b.dataset.mode));
+function render(){const a=DATA[cardOrder[cardIndex%cardOrder.length]];$('app').innerHTML=`
+<div class="row"><span class="muted tiny">암기 카드 · ${cardIndex+1} / ${DATA.length}</span><span class="tiny muted">카드를 눌러 정답 확인</span></div>
+<div class="progress"><span style="width:${(cardIndex+1)/DATA.length*100}%"></span></div>
+<div class="center"><div class="bigchar">${a.h}</div><div class="${revealed?'':'hide'} prompt">${a.m}</div><div class="muted">${revealed?'정답을 확인했어요.':'이 한자의 음과 뜻은?'}</div>
+<div class="actions">${revealed?'<button class="good" id="remember">알고 있어요 ✓</button><button class="bad" id="forgot">다시 외울래요 ×</button>':'<button class="primary" id="reveal">정답 보기</button>'}<button class="secondary" id="next">다음 카드 →</button></div></div>`;
+$('reveal')?.addEventListener('click',()=>{revealed=true;render()});
+$('remember')?.addEventListener('click',()=>nextCard());$('forgot')?.addEventListener('click',()=>{if(!wrong.includes(cardOrder[cardIndex%cardOrder.length]))wrong.push(cardOrder[cardIndex%cardOrder.length]);updateStats();nextCard()});
+$('next').onclick=nextCard}
+function nextCard(){cardIndex++;revealed=false;if(cardIndex>=cardOrder.length)cardIndex=0;render()}
+function startQuiz(indices,kind='h2m',allowToggle=false){if(!indices.length){$('app').innerHTML='<div class="center"><h2>오답이 아직 없어요!</h2><p class="muted">먼저 퀴즈를 풀어보세요.</p><button class="primary" id="startQuizBtn">퀴즈 시작</button></div>';$('startQuizBtn').addEventListener('click',()=>setMode('h2m'));return}
+quiz=shuffle(indices);qi=0;score=0;wrong=[];answered=false;examDone=false;quizKind=kind;quizToggle=allowToggle;renderQuestion()}
+let quizKind='h2m',quizToggle=false;
+function renderQuestion(){if(qi>=quiz.length){finish();return}answered=false;const idx=quiz[qi],a=DATA[idx];let askH=quizKind==='h2m';if(quizToggle)askH=Math.random()<.5;
+let correct=askH?a.m:a.h;let opts=shuffle([correct,...shuffle(DATA.filter((_,i)=>i!==idx).map(x=>askH?x.m:x.h)).slice(0,3)]);
+$('app').innerHTML=`<div class="row"><b>${mode==='exam'?'실전 시험':'객관식 퀴즈'}</b><span class="muted tiny">${qi+1} / ${quiz.length}문제</span></div><div class="progress"><span style="width:${qi/quiz.length*100}%"></span></div><div class="center"><div class="muted">${askH?'다음 한자의 음과 뜻을 고르세요':'다음 음과 뜻에 맞는 한자를 고르세요'}</div><div class="prompt">${askH?a.h:a.m}</div></div><div class="options">${opts.map((o,i)=>`<button class="option" data-opt="${i}">${o}</button>`).join('')}</div><div id="feedback"></div><div class="actions"><button class="primary hide" id="continue">다음 문제 →</button></div>`;
+document.querySelectorAll('[data-opt]').forEach((b,i)=>b.onclick=()=>choose(b,opts[i],correct,idx,askH));
+}
+function choose(btn,val,correct,idx,askH){if(answered)return;answered=true;let ok=val===correct;if(ok)score++;else if(!wrong.includes(idx))wrong.push(idx);
+document.querySelectorAll('[data-opt]').forEach(b=>{b.disabled=true;if(b.textContent===correct)b.classList.add('correct')});if(!ok)btn.classList.add('wrong');
+$('feedback').innerHTML=`<div class="feedback">${ok?'정답입니다! 🎉':'아쉬워요! 정답은 <b>'+correct+'</b> 입니다.'}<br><span class="tiny muted">${DATA[idx].h} · ${DATA[idx].m}</span></div>`;
+$('continue').classList.remove('hide');updateStats();$('continue').onclick=()=>{qi++;renderQuestion()}}
+function finish(){examDone=true;const pct=Math.round(score/quiz.length*100);$('app').innerHTML=`<div class="center"><div class="eyebrow" style="color:var(--accent)">RESULT</div><h2>학습 완료!</h2><div class="bigchar">${score}<span style="font-size:30px"> / ${quiz.length}</span></div><h2>${pct}점</h2><p class="muted">정답률 ${pct}% · ${quiz.length-score}개 오답</p><div class="progress"><span style="width:${pct}%"></span></div><div class="actions"><button class="primary" onclick="setMode('wrong')">틀린 문제 다시 풀기</button><button class="secondary" onclick="setMode('exam')">다시 시험 보기</button></div></div>`;updateStats()}
+function renderList(){$('app').innerHTML='<h2>전체 한자 57개</h2><p class="muted tiny">시험 범위 한자와 음·뜻</p><div class="list">'+DATA.map(x=>`<div class="tile"><b>${x.h}</b><small>${x.m}</small></div>`).join('')+'</div>'}
+render();
+</script></body></html>
